@@ -33,7 +33,7 @@ jobs:
           grep -q 'bulk: cmd4, cmd5' out.txt
           grep -q 'bulk: cmd6, cmd7' out.txt
           grep -q 'bulk: cmd8' out.txt
-          test "$(ls bulk*.log | wc -l)" -eq 3
+          test "$(ls bulk*.log | wc -l)" -eq 4
 
       - name: Package (cpack)
         run: |
