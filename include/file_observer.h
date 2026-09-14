@@ -7,6 +7,7 @@
 
 #include <map>
 #include <mutex>
+#include <memory>
 
 #include "iobserver.h"
 
@@ -18,7 +19,7 @@ public:
     /// @brief Вывусти завершённый пакет команд в консоль.
     /// @param[in] commands Строка с командами.
     /// @param[in] timestamp Временная точка регистрации первой команды.
-    void onBlock( const std::vector< std::string >& commands, std::time_t timestamp ) override;
+    void onBlock( std::shared_ptr<const std::vector<std::string>> commands, std::time_t timestamp ) override;
 
 private:
     std::map<std::time_t, int> usedTimestamps_;

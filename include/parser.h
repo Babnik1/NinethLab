@@ -34,7 +34,7 @@ private:
     /// @brief Уведомить наблюдателя, о появлении данных.
     /// @param[in] commands Строка с командами.
     /// @param[in] timestamp Временная точка регистрации первой команды.
-    void notify( const std::vector< std::string >& commands, std::time_t timestamp );
+    void notify( std::shared_ptr<const std::vector<std::string>> commands, std::time_t timestamp );
 
     /// @brief Обработать команду.
     /// @brief cmd Команда.

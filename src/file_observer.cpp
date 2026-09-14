@@ -8,7 +8,7 @@
 #include <fstream>
 #include <string>
 
-void FileObserver::onBlock(const std::vector<std::string>& commands, std::time_t timestamp)
+void FileObserver::onBlock( std::shared_ptr<const std::vector<std::string>> commands, std::time_t timestamp )
 {
     std::string filename;
     {
@@ -28,9 +28,9 @@ void FileObserver::onBlock(const std::vector<std::string>& commands, std::time_t
 
     std::ofstream out(filename);
     out << "bulk: ";
-    for (std::size_t i = 0; i < commands.size(); ++i) {
-        out << commands[i];
-        if (i + 1 < commands.size()) {
+    for (std::size_t i = 0; i < commands->size(); ++i) {
+        out << (*commands)[i];
+        if (i + 1 < commands->size()) {
             out << ", ";
         }
     }

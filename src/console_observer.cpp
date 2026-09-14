@@ -8,12 +8,12 @@
 
 #include <iostream>
 
-void ConsoleObserver::onBlock(const std::vector<std::string>& commands, std::time_t /*timestamp*/)
+void ConsoleObserver::onBlock( std::shared_ptr<const std::vector<std::string>> commands, std::time_t /*timestamp*/ )
 {
     std::cout << "bulk: ";
-    for (std::size_t i = 0; i < commands.size(); ++i) {
-        std::cout << commands[i];
-        if (i + 1 < commands.size()) {
+    for (std::size_t i = 0; i < commands->size(); ++i) {
+        std::cout << (*commands)[i];
+        if (i + 1 < commands->size()) {
             std::cout << ", ";
         }
     }

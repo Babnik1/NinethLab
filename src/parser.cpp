@@ -15,18 +15,20 @@ void Parser::subscribe(const std::shared_ptr<IObserver>& observer)
     observers_.push_back( observer );
 }
 
-void Parser::notify(const std::vector<std::string>& commands, std::time_t timestamp)
+void Parser::notify( std::shared_ptr<const std::vector<std::string>> commands, std::time_t timestamp )
 {
-    for (const auto& observer : observers_) {
+    for (const auto& observer : observers_) 
+    {
         observer->onBlock(commands, timestamp);
     }
 }
 
 void Parser::flushStatic()
 {
-    if (!staticBuffer_.empty()) {
-        notify(staticBuffer_, staticStartTime_);
-        staticBuffer_.clear();
+    if ( !staticBuffer_.empty() ) 
+    {
+        auto sharedBlock = std::make_shared<const std::vector<std::string>>( std::move(staticBuffer_) );
+        notify( sharedBlock, staticStartTime_);
     }
 }
 
@@ -74,9 +76,9 @@ void Parser::handleCloseBrace()
     --dynamicDepth_;
     if (dynamicDepth_ == 0) {
         if (!dynamicBuffer_.empty()) {
-            notify(dynamicBuffer_, dynamicStartTime_);
+            auto sharedBlock = std::make_shared<const std::vector<std::string>>( std::move(dynamicBuffer_) );
+            notify(sharedBlock, dynamicStartTime_);
         }
-        dynamicBuffer_.clear();
     }
 }
 

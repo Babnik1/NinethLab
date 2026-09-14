@@ -26,7 +26,7 @@ namespace {
 /// @brief Один завершённый (статический или динамический) блок команд, готовый к выводу.
 struct Block 
 {
-    std::vector< std::string > commands;
+    std::shared_ptr< const std::vector< std::string > > commands;
     std::time_t timestamp;
 };
 
@@ -78,7 +78,7 @@ private:
 class QueueingObserver : public IObserver 
 {
 public:
-    void onBlock( const std::vector< std::string >& commands, std::time_t timestamp ) override;
+    void onBlock( std::shared_ptr<const std::vector<std::string>> commands, std::time_t timestamp ) override;
 };
 
 /// @brief Обработчик потоков.
@@ -152,7 +152,7 @@ private:
     std::thread fileThread2_;
 };
 
-void QueueingObserver::onBlock( const std::vector<std::string>& commands, std::time_t timestamp ) 
+void QueueingObserver::onBlock( std::shared_ptr<const std::vector<std::string>> commands, std::time_t timestamp ) 
 {
     auto block = std::make_shared< Block >( Block{ commands, timestamp } );
     WorkerManager::instance().submit( std::move( block ) );
@@ -191,12 +191,23 @@ void Receive( void* context, char* buf, std::size_t len )
 
     ctx->accumulator.append( buf, len );
 
+    std::string_view view( ctx->accumulator );
+    std::size_t processedBytes = 0;
     std::size_t pos;
-    while ( ( pos = ctx->accumulator.find( '\n' ) ) != std::string::npos ) 
+
+    while ( ( pos = view.find( '\n' ) ) != std::string::npos ) 
     {
-        std::string cmd = ctx->accumulator.substr( 0, pos );
-        ctx->accumulator.erase( 0, pos + 1 );
-        ctx->parser.receiveLine( cmd );
+        std::string_view cmd = view.substr( 0, pos );
+        ctx->parser.receiveLine( std::string( cmd ) );
+
+        std::size_t skip = pos + 1;
+        view.remove_prefix( skip );
+        processedBytes += skip;
+    }
+
+    if ( processedBytes > 0 )
+    {
+        ctx->accumulator.erase( 0, processedBytes );
     }
 }
 

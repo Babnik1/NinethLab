@@ -5,6 +5,7 @@
 /// @brief Наблюдатель, выводящий в консоль.
 ///
 
+#include <memory>
 #include "iobserver.h"
 
 
@@ -15,5 +16,5 @@ public:
     /// @brief Вывусти завершённый пакет команд в консоль.
     /// @param[in] commands Строка с командами.
     /// @param[in] timestamp Временная точка регистрации первой команды. Не используется.
-    void onBlock( const std::vector< std::string >& commands, std::time_t timestamp ) override;
+    void onBlock( std::shared_ptr<const std::vector<std::string>>, std::time_t timestamp ) override;
 };
